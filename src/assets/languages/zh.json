@@ -1,0 +1,17 @@
+{
+	"common":{
+		"Home" : "主页",
+		"Film" : "电影列表",
+		"More" : "更多",
+		"PersonalCenter" : "个人中心",
+		"News" : "最新消息",
+		"About" : "关于我们",
+		"Logout" : "注销",
+		"Control" : "管理"
+	},
+	"film":{
+		"NowPlaying" : "正在热映",
+		"ComingSoon" : "即将上映",
+		"MoreFilm" : "更多电影"
+	}
+}

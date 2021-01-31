@@ -1,0 +1,17 @@
+{
+	"common":{
+		"Home" : "Home",
+		"Film" : "Film",
+		"More" : "More",
+		"PersonalCenter" : "PersonalCenter",
+		"News" : "News",
+		"About" : "About",
+		"Logout" : "Logout",
+		"Control" : "Control"
+	},
+	"film":{
+		"NowPlaying" : "NowPlaying",
+		"ComingSoon" : "ComingSoon",
+		"MoreFilm" : "MoreFilm"
+	}
+}
