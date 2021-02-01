@@ -15,6 +15,40 @@
 			</el-input>
 		</el-col>
 	</el-row>
+	
+	
+	<!-- 搜索列表 -->
+	<div style="margin-top: 50px;">
+		<el-row>
+			<el-col :span="12" :offset="6" style="background-color: #eee;margin-top: 5px;" v-for="item in data" :key="item.film_id" @click.native="goDetail(item)">
+				<el-row>
+					<el-col :span="8">
+						<el-image :src="item.film_pic" style="width: 60%;"></el-image>
+					</el-col>
+					<el-col :span="16" style="padding-top: 20px;">
+						<el-row>
+							<el-col :span="16">
+								<span class="film-name">{{item.film_name}}</span>
+								<br /><br />
+								<span class="film-type">动漫，友情</span>
+								<br /><br />
+								<span class="film-actors">主演：{{item.film_actors}}</span>
+								<br /><br />
+								<span class="film-time">{{item.film_time}} 上映</span>
+							</el-col>
+							<el-col :span="4" :offset="4">
+								<span class="film-mark" style="color:coral">{{item.film_evaluate}}分</span>
+							</el-col>
+						</el-row>
+					</el-col>
+				</el-row>
+			</el-col>
+		</el-row>
+	</div>
+	
+	
+	
+	
 </div>
 </template>
 
@@ -28,7 +62,7 @@
 		data () {
 			return {
 				input: '',
-				select: '',
+				select: '2',
 				data: []
 			}
 		},
@@ -38,9 +72,15 @@
 			},
 			search () {
 				axios.get('/api/film/search',{params:{will: this.select,s: this.input}}).then(res=>{
-					console.log(res)
+					this.data = res.data
 				})
+			},
+			goDetail (item) {
+				console.log(item)
 			}
+		},
+		created() {
+			
 		}
 	}
 </script>
@@ -48,5 +88,9 @@
 <style>
 	.input-with-select .el-input-group__prepend {
 		background-color: white;
+	}
+	.film-name {
+		font-size: large;
+		font-weight: 900;
 	}
 </style>
