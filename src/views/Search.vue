@@ -15,6 +15,11 @@
 			</el-input>
 		</el-col>
 	</el-row>
+	<el-row  type="flex" justify="center">
+		<el-col :span="3">
+			<span class="result">一共搜索到{{data.length}}个结果</span>
+		</el-col>
+	</el-row>
 	
 	
 	<!-- 搜索列表 -->
@@ -92,5 +97,8 @@
 	.film-name {
 		font-size: large;
 		font-weight: 900;
+	}
+	.result {
+		color: #eee;
 	}
 </style>
