@@ -10,13 +10,13 @@
 				<el-card>
 					<el-row>
 						<el-col :span="6" :offset="2">
-							<h2>{{this.$store.state.acount.account_name}}</h2>
+							<h2>{{this.$store.state.account.account_name}}</h2>
 							<div style="height: 300px;background-color:black"></div>
 						</el-col>
 						<el-col :span="12" :offset="2">
 							<br /><br /><br /><br /><br />
-							<span>绑定邮箱：{{this.$store.state.acount.email}}</span><br /><br /><br />
-							<span>用户类型：{{this.$store.state.acount.type}}</span><br /><br /><br />
+							<span>绑定邮箱：{{this.$store.state.account.email}}</span><br /><br /><br />
+							<span>用户类型：{{this.$store.state.account.type}}</span><br /><br /><br />
 							<span>用户信息(占位)</span><br /><br /><br />
 							<span>用户信息(占位)</span><br /><br /><br />
 						</el-col>
@@ -125,7 +125,7 @@
 			
 			//检测原密码
 			var validatePass3 = (rule, value, callback) => {
-				if(value !== this.$store.state.acount.account_password)
+				if(value !== this.$store.state.account.account_password)
 				{
 					callback(new Error('与原密码不一致'));
 				}else {
@@ -138,10 +138,10 @@
 				ticketShow: true,
 				editShow: false,
 				updateForm: {
-					username: this.$store.state.acount.account_name,
-					email: this.$store.state.acount.email,
-					password:this.$store.state.acount.account_password,
-					id:this.$store.state.acount.account_id
+					username: this.$store.state.account.account_name,
+					email: this.$store.state.account.email,
+					password:this.$store.state.account.account_password,
+					id:this.$store.state.account.account_id
 				},
 				changepwForm: {
 					originpw: '',
@@ -186,9 +186,9 @@
 				this.dialogeditVisible = false
 			},
 			initial () {
-				this.updateForm.username = this.$store.state.acount.account_name
-				this.updateForm.email = this.$store.state.acount.email
-				this.updateForm.password = this.$store.state.acount.account_password
+				this.updateForm.username = this.$store.state.account.account_name
+				this.updateForm.email = this.$store.state.account.email
+				this.updateForm.password = this.$store.state.account.account_password
 				alert('属性重新初始化')
 			},
 			update () {
@@ -214,7 +214,7 @@
 			if(this.$store.state.Ticket.length===0)
 			{
 				console.log('使用ajax获取票据信息')
-				this.$store.dispatch("getticket",this.$store.state.acount.account_id)
+				this.$store.dispatch("getticket",this.$store.state.account.account_id)
 			}else {
 				console.log("使用票据信息缓存")
 			}

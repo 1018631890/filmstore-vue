@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<navbar></navbar>
-		<el-row gutter="20" style="margin-top: 10px;" >
+		<el-row :gutter="20" style="margin-top: 10px;" >
 			
 			<!-- 左侧导航栏部分 -->
 			
@@ -25,7 +25,7 @@
 				</el-menu-item>
 				<el-menu-item index="/admin/usercontroller">
 					<i class="el-icon-setting"></i>
-					<span slot="title">用户管理</span>
+					<span slot="title">用户列表</span>
 				</el-menu-item>
 				<el-submenu index="/admin/">
 				<template slot="title">
@@ -58,7 +58,7 @@
 		</el-row>
 		
 		<el-dialog :visible.sync="dialogFilmVisible" :title="filmtitle" style="margin-left: 800px;width: 1000px;" top="0px">
-			<div style="height: 1000px;">
+			<div style="height: 1500px;">
 				<el-form :model="filmform" ref="filmform">
 					<el-form-item label="电影名称">
 						<el-input v-model="filmform.name"></el-input>
@@ -82,7 +82,21 @@
 					<el-form-item label="电影简介">
 						<el-input v-model="filmform.abstract" type="textarea" :autosize="{ minRows: 4, maxRows: 4}"></el-input>
 					</el-form-item>
-					<el-form-item label="//图片上传(未实现)"></el-form-item>
+					<el-form-item>
+						<el-upload
+						ref="upload"
+						class="upload-demo"
+						action="#"
+						list-type="picture"
+						:auto-upload="false"
+						:on-change="picChange"
+						:file-list="filelist"
+						:limit="1">
+						<el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+						<el-button style="margin-left: 10px;" size="small" type="success" >上传</el-button>
+						<div slot="tip" class="el-upload__tip">只能上传png文件，且不超过500kb</div>
+						</el-upload>
+					</el-form-item>
 					<el-form-item>
 						<el-button type="info" plain size="small" @click="dialogFilmVisible=false">取消</el-button>
 						<el-button type="primary" plain size="small" @click="controller($route.path.split('/')[2],type,filmform)">提交</el-button>
@@ -92,7 +106,7 @@
 		</el-dialog>
 		
 		<el-dialog :visible.sync="dialogNewsVisible" :title="newstitle"  style="margin-left: 800px;width: 1000px;" top="0px">
-			<div  style="height: 1000px;">
+			<div  style="height: 1500px;">
 				<el-form :model="newsform" ref="newsform">
 					<el-form-item label="新闻类型">
 						<el-input v-model="newsform.news_type"></el-input>
@@ -136,6 +150,7 @@
 	export default {
 		data () {
 			return {
+				filelist: [],
 				// 删除提示框的信息存储
 				message: '',
 				count: '0',
@@ -217,6 +232,7 @@
 					this.filmform.will = ''
 					this.filmform.actors = ''
 					this.filmform.time = ''
+					this.filelist=[]
 					// console.log(this.$route.path.split('/')[2])	
 				}
 				
@@ -243,6 +259,9 @@
 					this.filmform.time = data.film_time
 					this.filmform.evaluate = data.film_evaluate
 					this.filmform.pic = data.film_pic
+					var temp = {name: '',url: this.filmform.pic}
+					this.filelist= []
+					this.filelist= this.filelist.concat(temp)
 				}
 				
 				// 新闻界面的新增视图
@@ -291,21 +310,42 @@
 				{
 					if(data.actors!==''&&data.name!==''&&data.time!==''&&data.will!==''&&data.abstract!=='')
 					{
-						axios.get('/api/film/insert',{params: {film_name: data.name,film_time: data.time,film_abstract: data.abstract,film_will: data.will,film_actors: data.actors,film_evaluate: '0'}}).then((res)=>{
-							if(res.data === 1)
-							{
-								alert('新增电影成功')
-								this.dialogFilmVisible=false
-								this.$refs['filmform'].resetFields()
-								// key值增加刷新子组件
-								this.count++
-								// 刷新film列表
-								this.$store.dispatch("getallfilm")
-								// this.reload()
-							}else{
-								alert('新增电影失败')
+						var param = new FormData();
+						param.append("file",this.filelist[0].raw)
+						console.log(this.filelist[0])
+						axios({
+							method:"post",
+							url:"/api/fdfs/upload",
+							data:param,
+							headers:{
+								"Content-Type": 'multipart/form-data'
 							}
+						}).then(res=>{
+							// console.log(res.data)
+							var path = "http://82.156.183.252:8888/"+res.data
+							this.filmform.pic = data.pic = path
+							console.log(this.filmform.pic)
+							axios.get('/api/film/insert',{params: {film_name: data.name,film_time: data.time,film_abstract: data.abstract,film_will: data.will,film_actors: data.actors,film_evaluate: '0',film_pic: data.pic}}).then((res)=>{
+								if(res.data === true)
+								{
+									// alert('新增电影成功')
+									this.$message.success('新增电影成功')
+									this.dialogFilmVisible=false
+									this.filelist = []
+									this.$refs['filmform'].resetFields()
+									// key值增加刷新子组件
+									this.count++
+									// 刷新film列表
+									this.$store.dispatch("getallfilm")
+									// this.reload()
+								}else{
+									// alert('新增电影失败')
+									this.$message.error('新增电影失败')
+								}
+							})
 						})
+		
+						
 					}
 				}
 				
@@ -315,16 +355,18 @@
 					if(data!=='')
 					{
 						axios.get('/api/film/delete',{params:{id: data}}).then((res)=>{
-							if(res.data === 1)
+							if(res.data === true)
 							{
-								alert('删除电影成功')
+								// alert('删除电影成功')
+								this.$message.success('删除电影成功')
 								this.dialogxxVisible=false
 								// key值增加刷新子组件
 								this.count++
 								// 刷新film列表
 								this.$store.dispatch("getallfilm")
 							}else{
-								alert('删除电影失败')
+								// alert('删除电影失败')
+								this.$message.error('删除电影失败')
 								this.dialogxxVisible=false
 							}
 						})
@@ -334,20 +376,61 @@
 				// 电影界面的编辑操作
 				else if(page==='filmcontroller'&&type==='edit')
 				{
-					axios.get('/api/film/update',{params: {film_name: data.name,film_time: data.time,film_abstract: data.abstract,film_will: data.will,film_actors: data.actors,film_id: data.id,film_evaluate: data.evaluate,film_pic: data.pic}}).then(res=>{
-						if(res.data === 1){
-							alert('修改电影成功')
-							this.dialogFilmVisible=false
-							this.$refs['filmform'].resetFields()
-							// key值增加刷新子组件
-							this.count++
-							// 刷新film列表
-							this.$store.dispatch("getallfilm")
-							// this.reload()
-						}else{
-								alert('修改电影失败')
-						}
-					})
+					if(this.filelist[0].name==='')
+					{
+						console.log("未修改图片")
+						axios.get('/api/film/update',{params: {film_name: data.name,film_time: data.time,film_abstract: data.abstract,film_will: data.will,film_actors: data.actors,film_id: data.id,film_evaluate: data.evaluate,film_pic: data.pic}}).then(res=>{
+							if(res.data === true){
+								// alert('修改电影成功')
+								this.$message.success('修改电影成功')
+								this.dialogFilmVisible=false
+								this.$refs['filmform'].resetFields()
+								// key值增加刷新子组件
+								this.count++
+								// 刷新film列表
+								this.$store.dispatch("getallfilm")
+								// this.reload()
+							}else{
+									// alert('修改电影失败')
+									this.$message.error('修改电影失败')
+							}
+						})
+					}
+					else {
+						param = new FormData();
+						param.append("file",this.filelist[0].raw)
+						console.log(this.filelist[0])
+						axios({
+							method:"post",
+							url:"/api/fdfs/upload",
+							data:param,
+							headers:{
+								"Content-Type": 'multipart/form-data'
+							}
+						}).then(res=>{
+							// console.log(res.data)
+							var path = "http://82.156.183.252:8888/"+res.data
+							this.filmform.pic = data.pic = path
+							console.log(this.filmform.pic)
+							axios.get('/api/film/update',{params: {film_name: data.name,film_time: data.time,film_abstract: data.abstract,film_will: data.will,film_actors: data.actors,film_id: data.id,film_evaluate: data.evaluate,film_pic: data.pic}}).then(res=>{
+								if(res.data === true){
+									// alert('修改电影成功')
+									this.$message.success('修改电影成功')
+									this.dialogFilmVisible=false
+									this.$refs['filmform'].resetFields()
+									// key值增加刷新子组件
+									this.count++
+									// 刷新film列表
+									this.$store.dispatch("getallfilm")
+									// this.reload()
+								}else{
+										// alert('修改电影失败')
+										this.$message.error('修改电影失败')
+								}
+							})
+						})
+					}
+					
 				}
 						
 				// 用户界面的新增操作
@@ -374,14 +457,16 @@
 					if(data.news_text!==''&&data.news_type!==''&&data.news_title!==''&&data.news_time!==''&&data.summary!=='')
 					{
 						axios.get('/api/news/insert',{params:{news_title: data.news_title,news_type: data.news_type,news_time: data.news_time,news_text: data.news_text,summary: data.summary}}).then(res=>{
-							if(res.data===1)
+							if(res.data===true)
 							{
-								alert('新增新闻成功')
+								// alert('新增新闻成功')
+								this.$message.success('新增新闻成功')
 								this.dialogNewsVisible=false
 								this.$store.dispatch("getnews")
 								this.count++
 							}else {
-								alert('新增新闻失败')
+								// alert('新增新闻失败')
+								this.$message.error('新增新闻失败')
 							}
 						})
 					}
@@ -393,14 +478,16 @@
 					if(data!=='')
 					{
 						axios.get('api/news/delete',{params:{id: data}}).then(res=>{
-							if(res.data===1)
+							if(res.data===true)
 							{
-								alert('删除新闻成功')
+								// alert('删除新闻成功')
+								this.$message.success('删除新闻成功')
 								this.dialogxxVisible=false
 								this.$store.dispatch("getnews")
 								this.count++
 							}else {
-								alert('删除新闻失败')
+								// alert('删除新闻失败')
+								this.$message.error('删除新闻失败')
 							}
 						})
 					}
@@ -410,20 +497,54 @@
 				else if(page==='newscontroller'&&type==='edit')
 				{
 					axios.get('/api/news/update',{params:{news_title: data.news_title,news_type: data.news_type,news_time: data.news_time,news_text: data.news_text,summary: data.summary,news_id: data.news_id}}).then(res=>{
-						if(res.data===1)
+						if(res.data===true)
 						{
-							alert('修改新闻成功')
+							// alert('修改新闻成功')
+							this.$message.success('修改新闻成功')
 							this.dialogNewsVisible=false
 							this.$store.dispatch("getnews")
 							this.count++
 						}else {
-							alert('修改新闻失败')
+							// alert('修改新闻失败')
+							this.$message.error('修改新闻失败')
 						}
 					})
 				}
-			}
+			},
+			
+			picChange(file,fileList)
+			{
+				this.filelist = fileList;
+				console.log(this.filelist)
+			},
+			
+			// submitUpload()
+			// {
+			// 	if(this.filelist[0].name==='')
+			// 	{
+			// 		console.log("未修改图片")
+			// 	}
+			// 	else {
+			// 		var param = new FormData();
+			// 		param.append("file",this.filelist[0].raw)
+			// 		console.log(this.filelist[0])
+			// 		axios({
+			// 			method:"post",
+			// 			url:"/api/fdfs/upload",
+			// 			data:param,
+			// 			headers:{
+			// 				"Content-Type": 'multipart/form-data'
+			// 			}
+			// 		}).then(res=>{
+			// 			// console.log(res.data)
+			// 			var path = "http://82.156.183.252:8888/"+res.data
+			// 			this.filmform.pic = path
+			// 			console.log(this.filmform.pic)
+			// 		})
+			// 	}
 						
-		}
+			// }
+	},
 	}
 </script>
 

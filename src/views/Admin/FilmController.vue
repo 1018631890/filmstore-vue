@@ -2,9 +2,23 @@
 	<div>
 		<el-card style="margin-top: 20px;">
 			<el-table :data="this.$store.state.Film">
+				<el-table-column type="expand">
+					<template slot-scope="props">
+						<el-form label-position="left" label-width="100px">
+							<el-form-item label="电影序列号:">
+								{{props.row.film_id}}
+							</el-form-item>
+							<el-form-item label="电影类型:">
+								{{props.row.type}}
+							</el-form-item>
+							<el-form-item label="电影简介:">
+								{{props.row.film_abstract}}
+							</el-form-item>
+						</el-form>
+					</template>
+				</el-table-column>
 				<el-table-column prop="film_name" label="电影名称" align="center"></el-table-column>
 				<el-table-column prop="film_time" label="上映时间" align="center" sortable></el-table-column>
-				<el-table-column prop="film_abstract" label="电影简介" align="center"></el-table-column>
 				<el-table-column prop="film_actors" label="参演演员" align="center"></el-table-column>
 				<el-table-column prop="film_evaluate" label="电影评分" align="center" sortable></el-table-column>
 				<el-table-column prop="film_will" label="电影状态" :formatter="statechange" align="center"></el-table-column>

@@ -141,24 +141,36 @@ export default {
 			
 			if(this.RegisterForm.name==='' ||this.RegisterForm.email==='' ||this.RegisterForm.password==='' ||this.RegisterForm.passwordagain==='')
 			{
-				alert("请输入完整信息")
+				this.$message({
+					message: "请输入完整信息",
+					type: 'warning'
+				})
 			
 			}else {	
 				axios.get('/api/account/getbyname/',{params:{name: this.RegisterForm.name}}).then((response) =>{
 					// console.log(response)
 					if(response.data !== '')
 					{
-						alert("用户名已存在,请重新输入")
+						this.$message({
+							message: "用户名已存在,请重新输入",
+							type: 'warning'
+						})
 					}
 					else {
 						axios.get('/api/account/insert',{params:{account_name: this.RegisterForm.name, account_password: this.RegisterForm.password, type: 'user', email: this.RegisterForm.email}}).then((response) =>{
-							if(response.data=== 1)
+							if(response.data=== true)
 							{
-								alert("注册成功")
+								this.$message({
+									message: "注册成功",
+									type: 'success'
+								})
 								this.dialogFormVisible = false
 							}
 							else {
-								alert("注册失败")
+								this.$message({
+									message: "注册失败",
+									type: 'error'
+								})
 							}
 						})
 						

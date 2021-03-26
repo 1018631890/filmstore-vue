@@ -129,12 +129,19 @@ router.beforeEach((to, from, next) => {
 		next();
 	}
 	
-	if(to.path==='/admin'||to.path==='/admin/'){
+	if(to.path==='/admin'||to.path==='/admin/filmcontroller'||to.path==='/admin/newscontroller'||to.path==='/admin/usercontroller'){
 		console.log("盘查")
-		if(store.state.isAdmin)
+		if(store.state.isAdmin===true&&to.path!=='/admin')
 		{
-			next();
-		}else {
+			next()
+		}
+		else if(store.state.isAdmin===true&&to.path==='/admin')
+		{
+			console.log("转到")
+			next("/admin/filmcontroller")
+		}
+		else 
+		{
 			next("/index")
 		}
 	}
@@ -144,10 +151,7 @@ router.beforeEach((to, from, next) => {
 		next("/film/nowplaying")
 	}
 	
-	if(to.path==='/admin'){
-		console.log("转到")
-		next("/admin/filmcontroller")
-	}
+	
 })
 
 export default router

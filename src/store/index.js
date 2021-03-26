@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
 import router from '@/router'
+import { Message } from 'element-ui';
 
 Vue.use(Vuex)
 
@@ -9,7 +10,7 @@ const store = new Vuex.Store({
   state: {       //存储状态
 	
 	isLogin: false,
-	acount: null,
+	account: null,
 	isAdmin: false,
 	NowPlayingFilm: [],
 	ComingSoonFilm: [],
@@ -25,7 +26,7 @@ const store = new Vuex.Store({
 		// console.log(data.account_name)
 		// console.log(state.isAdmin)
 		state.isLogin = true
-		state.acount = data
+		state.account = data
 		if(data.type=='admin')
 		{
 			state.isAdmin = true
@@ -34,7 +35,7 @@ const store = new Vuex.Store({
 	
 	Logoutchange(state){
 		state.isLogin = false
-		state.acountname = null
+		state.account = null
 		state.isAdmin= false
 	},
 	
@@ -70,14 +71,16 @@ const store = new Vuex.Store({
 		axios.get('/api/account/getbyname/',{params:{name: LoginForm.username}}).then((response) =>{
 		if(response.data.account_password===LoginForm.password)
 		{
-			alert("登录成功")
+			// alert("登录成功")
+			Message.success("登录成功")
 			console.log("response",response)
 			store.commit("Loginchange",response.data)
 			router.push('/index')
 		}
 		else
 		{
-			alert("登录失败")
+			// alert("登录失败")
+			Message.error("登录失败,账号或密码错误")
 		}
 		})
 	},
