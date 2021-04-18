@@ -69,6 +69,12 @@
 					<el-form-item label="参演演员">
 						<el-input v-model="filmform.actors"></el-input>
 					</el-form-item>
+					<el-form-item label="电影类型">
+						<el-input v-model="filmform.type"></el-input>
+					</el-form-item>
+					<el-form-item label="电影时长">
+						<el-input v-model="filmform.timelong"></el-input>
+					</el-form-item>
 					<el-form-item label="电影状态">
 						<el-select v-model="filmform.will" placeholder="请选择">
 							<el-option
@@ -173,7 +179,9 @@
 					actors: '',
 					time: '',
 					evaluate: '',
-					pic: ''
+					pic: '',
+					type: '',
+					timelong: ''
 				},
 				// 新闻信息部分
 				newsform: {
@@ -259,6 +267,8 @@
 					this.filmform.time = data.film_time
 					this.filmform.evaluate = data.film_evaluate
 					this.filmform.pic = data.film_pic
+					this.filmform.type = data.film_type
+					this.filmform.timelong = data.film_timelong
 					var temp = {name: '',url: this.filmform.pic}
 					this.filelist= []
 					this.filelist= this.filelist.concat(temp)
@@ -325,7 +335,7 @@
 							var path = "http://82.156.183.252:8888/"+res.data
 							this.filmform.pic = data.pic = path
 							console.log(this.filmform.pic)
-							axios.get('/api/film/insert',{params: {film_name: data.name,film_time: data.time,film_abstract: data.abstract,film_will: data.will,film_actors: data.actors,film_evaluate: '0',film_pic: data.pic}}).then((res)=>{
+							axios.get('/api/film/insert',{params: {film_name: data.name,film_time: data.time,film_abstract: data.abstract,film_will: data.will,film_actors: data.actors,film_evaluate: '0',film_pic: data.pic,film_type: data.type,film_timelong: data.timelong}}).then((res)=>{
 								if(res.data === true)
 								{
 									// alert('新增电影成功')
@@ -376,10 +386,10 @@
 				// 电影界面的编辑操作
 				else if(page==='filmcontroller'&&type==='edit')
 				{
-					if(this.filelist[0].name==='')
+					if(this.filelist[0].url === data.pic)
 					{
 						console.log("未修改图片")
-						axios.get('/api/film/update',{params: {film_name: data.name,film_time: data.time,film_abstract: data.abstract,film_will: data.will,film_actors: data.actors,film_id: data.id,film_evaluate: data.evaluate,film_pic: data.pic}}).then(res=>{
+						axios.get('/api/film/update',{params: {film_name: data.name,film_time: data.time,film_abstract: data.abstract,film_will: data.will,film_actors: data.actors,film_id: data.id,film_evaluate: data.evaluate,film_pic: data.pic,film_type: data.type,film_timelong: data.timelong}}).then(res=>{
 							if(res.data === true){
 								// alert('修改电影成功')
 								this.$message.success('修改电影成功')
@@ -412,7 +422,7 @@
 							var path = "http://82.156.183.252:8888/"+res.data
 							this.filmform.pic = data.pic = path
 							console.log(this.filmform.pic)
-							axios.get('/api/film/update',{params: {film_name: data.name,film_time: data.time,film_abstract: data.abstract,film_will: data.will,film_actors: data.actors,film_id: data.id,film_evaluate: data.evaluate,film_pic: data.pic}}).then(res=>{
+							axios.get('/api/film/update',{params: {film_name: data.name,film_time: data.time,film_abstract: data.abstract,film_will: data.will,film_actors: data.actors,film_id: data.id,film_evaluate: data.evaluate,film_pic: data.pic,film_type: data.type,film_timelong: data.timelong}}).then(res=>{
 								if(res.data === true){
 									// alert('修改电影成功')
 									this.$message.success('修改电影成功')

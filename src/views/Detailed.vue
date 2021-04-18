@@ -8,7 +8,7 @@
 				<el-image :src="data01.film_pic" class="image" style="width: 600%;"></el-image>
 			</el-col>
 			<el-col :span="18">
-				<span>名称：{{data01.film_name}}<br /><br />语言：<br /><br />上映时间：{{data01.film_time}}<br /><br />片长：<br /><br />演员列表：{{data01.film_actors}}<br /><br />类型：<br /><br />简介：{{data01.film_abstract}}</span>
+				<span>名称：{{data01.film_name}}<br /><br />上映时间：{{data01.film_time}}<br /><br />片长：{{data01.film_timelong}}分钟<br /><br />演员列表：{{data01.film_actors}}<br /><br />类型：{{data01.film_type}}<br /><br />简介：{{data01.film_abstract}}</span>
 			</el-col>
 		</el-row>
 		<div style="margin-right: 200px;">
@@ -22,6 +22,12 @@
 						high-threshold>
 					</el-rate>
 				</el-col>
+				<el-col :span="1" :offset="5">
+					<el-input-number v-model="num" :min="1" :max="10"></el-input-number>
+				</el-col>
+				<el-col :span="4" :offset="3">
+					<el-button type="primary" plain v-show="data01.film_will-0===0" @click="buy()">购票</el-button>
+				</el-col>
 			</el-row>
 			<el-alert type="info" style="margin-top: 30px;"></el-alert>
 			<el-row>
@@ -29,9 +35,15 @@
 					<h3>用户评论</h3>
 				</el-col>
 				<el-col :span="4" :offset="15">
-					<el-button type="success" style="margin-top: 15px;" @click="buttonaction()">{{buttontext}}</el-button>
+					<el-button type="success" plain style="margin-top: 15px;" @click="buttonaction()">{{buttontext}}</el-button>
 				</el-col>
 			</el-row>
+			
+			<!-- 扫码弹出框 -->
+			<el-dialog :visible.sync="dialogVisible" title="请使用小程序扫码" width="300px">
+				<vue-qr :text="codetext" :size="200"></vue-qr>
+			</el-dialog>
+			
 			<el-row>
 				<el-col :span="16" :offset="2">
 					
@@ -144,14 +156,19 @@
 <script>
 	import navbar from '../components/NavBar.vue'
 	import axios from 'axios'
+	import vueQr from 'vue-qr'
 	export default {
 		components: 
 		{
-			navbar
+			navbar,vueQr
 		},
 		data() 
 		{
 			return {
+				flag: '',
+				codetext: '',
+				num: 1,
+				dialogVisible: false,
 				usercomment: '',
 				data01: this.$route.params.film,
 				value: this.$route.params.film.film_evaluate / 2,
@@ -281,7 +298,40 @@
 						this.$message.error('评论删除失败')
 					}
 				})
+			},
+			
+			// 购票流程
+			buy()
+			{
+				var time = new Date()
+				var time1 = time.getFullYear() + "." + (time.getMonth() + 1) + "." + time.getDate();
+				this.codetext = this.$store.state.account.account_id + '/' + this.data01.film_id + '/' + this.num + '/' + time1
+				this.dialogVisible=true
+				axios.get('/api/purchase/addlist',{params:{accountid: this.$store.state.account.account_id}}).then(res=>{
+					console.log(res.data)
+					this.buycheck()
+				})
+			},
+			buycheck()
+			{
+				axios.get('/api/purchase/get',{params: {accountid: this.$store.state.account.account_id}}).then(res=>{
+					console.log(res.data)
+					this.flag = res.data
+					// 后端返回false则继续轮询
+					if(this.flag===false)		
+					{
+						setTimeout(()=>{
+							this.buycheck()
+						},2000)
+					}
+					// 后端返回true购票流程结束
+					else {
+						this.$message.success('购票成功')
+						this.dialogVisible=false
+					}
+				})
 			}
+
 		},
 		mounted() {
 			this.getcomment()
