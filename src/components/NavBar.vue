@@ -3,7 +3,7 @@
 		<el-menu router :default-active="'/'+$route.path.split('/')[1]" class="el-menu-demo" mode="horizontal" @select="handleSelect" >
 				<el-menu-item><i class="el-icon-eleme"></i><span>Film</span></el-menu-item>
 				<el-menu-item index="/index">{{$t('common.Home')}}</el-menu-item>
-				<el-menu-item index="/film/nowplaying">{{$t('common.Film')}}</el-menu-item>
+				<el-menu-item index="/film">{{$t('common.Film')}}</el-menu-item>
 				<el-submenu index="3">
 				<template slot="title">{{$t('common.More')}}</template>
 				<el-menu-item index="/center">{{$t('common.PersonalCenter')}}</el-menu-item>

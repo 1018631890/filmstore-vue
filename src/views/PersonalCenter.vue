@@ -44,8 +44,7 @@
 				<el-card>
 					<el-table v-show="ticketShow" :data="this.$store.state.Ticket">
 						<el-table-column label="电影" align="center" prop="film_id" :formatter="namechange"></el-table-column>
-						<el-table-column label="起始时间" align="center" prop="ticket_starttime"></el-table-column>
-						<el-table-column label="截止时间" align="center" prop="ticket_endtime"></el-table-column>
+						<el-table-column label="数量" align="center" prop="ticket_num"></el-table-column>
 						<el-table-column label="状态" align="center" prop="ticket_state"></el-table-column>
 					</el-table>
 					<el-form v-show="editShow" :model="updateForm" label-position="left" label-width="80px">

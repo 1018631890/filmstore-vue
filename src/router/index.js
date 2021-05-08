@@ -24,7 +24,10 @@ const routes = [
 	{
 		path: '/index',
 		name: 'Index',
-		component: Index
+		component: Index,
+		meta: {
+			title: '首页'
+		}
 	},
 	{
 		path: '/',
@@ -33,7 +36,10 @@ const routes = [
     {
         path: '/login',
         name: 'Login',
-        component: Login
+        component: Login,
+		meta: {
+			title: '登录'
+		}
     },
 	{
 		path: '/film',
@@ -50,22 +56,34 @@ const routes = [
 				name: 'ComingSoon',
 				component: ComingSoon
 			}
-		]
+		],
+		meta: {
+			title: '电影'
+		}
 	},
 	{
 		path: '/center',
 		name: 'Center',
-		component: Center
+		component: Center,
+		meta: {
+			title: '个人中心'
+		}
 	},
 	{
 		path: '/news',
 		name: 'News',
-		component: News
+		component: News,
+		meta: {
+			title: '最新影讯'
+		}
 	},
 	{
 		path: '/about',
 		name: 'About',
-		component: About
+		component: About,
+		meta: {
+			title: '关于我们'
+		}
 	},
 	{
 		path: '/admin',
@@ -92,17 +110,26 @@ const routes = [
 				name: 'UserController',
 				component: UserController
 			}
-		]
+		],
+		meta: {
+			title: '管理员界面'
+		}
 	},
 	{
 		path: '/search',
 		name: 'Search',
-		component: Search
+		component: Search,
+		meta: {
+			title: '电影搜索'
+		}
 	},
 	{
 		path: '/detail',
 		name: 'Detail',
-		component: Detail
+		component: Detail,
+		meta: {
+			title: '详细信息'
+		}
 	}
 
 ]
@@ -115,6 +142,12 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
 	// console.log(store.state.isLogin)
 	// console.log(router.app.$options.components.App.store.state.isLogin)
+	
+	if(to.meta.title){
+		document.title=to.meta.title
+		next();
+	}
+	
 	if(to.path==='/index'){
 		console.log("盘查")
 		if(store.state.isLogin)
@@ -148,6 +181,7 @@ router.beforeEach((to, from, next) => {
 	
 	if(to.path==='/film'){
 		console.log("转到")
+		document.title=to.meta.title
 		next("/film/nowplaying")
 	}
 	
